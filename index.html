@@ -8,6 +8,7 @@
 <body>
     <canvas id="canvas" width="600" height="400" style="margin: auto;"></canvas>
 
+    <input type="number" placeholder="width of line in px" id="pxwidth" onchange="startOver()">
     <input type="number" placeholder="width in px" id="widthIn" min="1" onchange="setUpCanvas()">
     <input type="number" placeholder="Update speed in ms" id="speed" min="1">
     <button onclick="onSubmit()">SORT!</button>

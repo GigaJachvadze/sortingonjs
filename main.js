@@ -4,6 +4,7 @@ let cWidthIn = document.getElementById('widthIn');
 let speed;
 let fastSort = document.getElementById('fast');
 let fastText = document.getElementById('fastText');
+let widthOfPX = document.getElementById('pxwidth');
 
 let minHeight = 1;
 
@@ -79,22 +80,40 @@ function checkIfFast(){
     }
 }
 
+function checkPxWidth(){
+    if(widthOfPX.value){
+        if(width % widthOfPX.value != 0){
+            widthOfPX.value -= width % widthOfPX.value;
+        }
+    }
+    else{
+        widthOfPX.value = 1;
+    }
+    if(widthOfPX.value === 0){
+        widthOfPX.value = 1;
+    }
+}
+
 function setUp(){
     // ctx.beginPath();
     cantSort = false;
     lines = {x: [], y: [], color:[]};
 
+    checkPxWidth();
+
     let y;
-    for (let i = 0; i < width; i++) {
+    for (let i = 0; i < width / widthOfPX.value; i++) {
         ctx.beginPath();
 
         y = randomRange(minHeight, height);
 
+        ctx.lineWidth = widthOfPX.value;
+
         ctx.strokeStyle = colorStates.normal;
 
-        ctx.moveTo(i, height);
-        ctx.lineTo(i, height - y);
-        lines.x.push(i);
+        ctx.moveTo(i * widthOfPX.value, height);
+        ctx.lineTo(i * widthOfPX.value, height - y);
+        lines.x.push(i * widthOfPX.value);
         lines.y.push(y);
         lines.color.push(colorStates.normal);
 
@@ -123,6 +142,8 @@ function reDraw(){
     
     for (let i = 0; i < lines.x.length; i++) {
         ctx.beginPath();
+
+        ctx.lineWidth = widthOfPX.value;
 
         ctx.strokeStyle = lines.color[i];
 
@@ -245,6 +266,7 @@ async function selectionSort(){
             lines.color[i] = colorStates.sorted;
             await sleep(speed);
             reDraw();
+            lines.color[min] = colorStates.normal;
         }
         else{
             lines.color[i] = colorStates.sorted;
@@ -257,3 +279,5 @@ async function selectionSort(){
 
     console.log(lines);
 }
+
+//sorting algorithms
