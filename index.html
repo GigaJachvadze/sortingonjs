@@ -8,9 +8,12 @@
 <body>
     <canvas id="canvas" width="600" height="400" style="margin: auto;"></canvas>
 
+    <input type="number" placeholder="width in px" id="widthIn" min="1" onchange="setUpCanvas()">
     <input type="number" placeholder="Update speed in ms" id="speed" min="1">
     <button onclick="onSubmit()">SORT!</button>
     <button onclick="startOver()">START OVER!</button>
+    <input type="checkbox" id="fast">
+    <label for="">FAST SORT!</label>
 
     <script src="main.js"></script>
 
