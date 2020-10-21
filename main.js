@@ -3,6 +3,7 @@
 let cWidthIn = document.getElementById('widthIn');
 let speed;
 let fastSort = document.getElementById('fast');
+let fastText = document.getElementById('fastText');
 
 let minHeight = 1;
 
@@ -17,8 +18,14 @@ let cantSort = false;
 let colorStates = {normal: 'black', sorted:'green', sorting:'blue'};
 let lines;
 
+let select = document.getElementById('select');
+
+let algorithmstemplate = {name: '', fast: true};
+let currentAlgorithms = [{name: 'BUBBLE', fast: true}, {name: 'SELECTION', fast: false}];
+
 function main(){
     setUpCanvas();
+    setUpSelect();
 }
 
 function onSubmit(){
@@ -31,6 +38,7 @@ function onSubmit(){
 
 function startOver(){
     startOverBool = true;
+    checkIfFast();
     clearCanvas();
     setUp();
 }
@@ -49,6 +57,26 @@ function setUpCanvas(){
     height = canvas.height;
 
     setUp();
+}
+
+function setUpSelect(){
+    for (let i = 0; i < currentAlgorithms.length; i++) {
+        let template = document.createElement('option');
+        template.value = i;
+        template.innerHTML = currentAlgorithms[i].name;
+        select.appendChild(template);
+    }
+}
+
+function checkIfFast(){
+    if(!currentAlgorithms[select.value].fast){
+        fastSort.style.display = 'none';
+        fastText.style.display = 'none';
+    }
+    else{
+        fastSort.style.display = 'inline-block';
+        fastText.style.display = 'inline';
+    }
 }
 
 function setUp(){
@@ -81,7 +109,12 @@ function setUp(){
 function update(){
     startOverBool = false;
     if(!cantSort){
-        bubbleSort();
+        if(currentAlgorithms[select.value].name == 'BUBBLE'){
+            bubbleSort();
+        }
+        else if(currentAlgorithms[select.value].name == 'SELECTION'){
+            selectionSort();
+        }
     }
 }
 
@@ -188,4 +221,39 @@ async function bubbleSort(){
         }
         console.log(lines)
     }
+}
+
+async function selectionSort(){
+
+    cantSort = true;
+
+    for (let i = 0; i < lines.y.length; i++) {
+        let min = i;
+        for (let j = i + 1; j < lines.y.length; j++) {
+            if (lines.y[min] > lines.y[j]) {
+                min = j;
+            }
+            if (startOverBool) {
+                break;
+            }
+        }
+        if (min !== i) {
+            let tmp = lines.y[i];
+            lines.y[i] = lines.y[min];
+            lines.y[min] = tmp;
+            lines.color[min] = colorStates.sorting;
+            lines.color[i] = colorStates.sorted;
+            await sleep(speed);
+            reDraw();
+        }
+        else{
+            lines.color[i] = colorStates.sorted;
+            reDraw();
+        }
+        if (startOverBool) {
+            break;
+        }
+    }
+
+    console.log(lines);
 }
