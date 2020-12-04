@@ -22,7 +22,7 @@ let lines;
 let select = document.getElementById('select');
 
 let algorithmstemplate = {name: '', fast: true};
-let currentAlgorithms = [{name: 'BUBBLE', fast: true}, {name: 'SELECTION', fast: false}];
+let currentAlgorithms = [{name: 'BUBBLE', fast: true}, {name: 'SELECTION', fast: false}, {name: 'MyOwn', fast: false}];
 
 function main(){
     setUpCanvas();
@@ -134,12 +134,15 @@ function update(){
         else if(currentAlgorithms[select.value].name == 'SELECTION'){
             selectionSort();
         }
+        else if(currentAlgorithms[select.value].name == 'MyOwn'){
+            MyOwnSort();
+        }
     }
 }
 
 function reDraw(){
     clearCanvas();
-    
+
     for (let i = 0; i < lines.x.length; i++) {
         ctx.beginPath();
 
@@ -173,7 +176,7 @@ window.onLoad = main();
 //sorting algorithms
 
 async function bubbleSort(){
-    
+
     cantSort = true;
 
     if(fastSort.checked){
@@ -278,6 +281,44 @@ async function selectionSort(){
     }
 
     console.log(lines);
+}
+
+async function MyOwnSort() {
+    cantSort = false;
+    let s = 128
+    for (let l = 0; l < s; l++) {
+        let portion = (lines.x.length - 1) / (s - l);
+        for (let i = 0; i < portion; i++) {
+            for (let j = 0; j < portion; j++) {
+                if (lines.y[j] > lines.y[j + 1]) 
+                {
+                    let temp = lines.y[j];
+                    lines.y[j] = lines.y[j + 1];
+                    lines.y[j + 1] = temp;
+                    lines.color[j + 1] = colorStates.sorting;
+                    lines.color[j] = colorStates.normal;
+                }
+                else{
+                    lines.color[j] = colorStates.normal;
+                }
+                if (startOverBool) {
+                    break;
+                }
+                // await sleep(speed);
+                // reDraw();
+            }
+            lines.color[((lines.x.length - 1) / (16 - i)) - i] = colorStates.sorted;
+    
+            if(i == (lines.x.length)- 2){
+                lines.color[0] = colorStates.sorted;
+            }
+            await sleep(speed);
+            reDraw();
+            if (startOverBool) {
+                break;
+            }
+        }
+    }
 }
 
 //sorting algorithms
