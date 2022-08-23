@@ -1,8 +1,8 @@
 // ALL CREDITS GO TO: GIGA JACHVADZE
 
 let cWidthIn = document.getElementById('widthIn');
-let speed;
-let fastSort = document.getElementById('fast');
+let fastSortInput = document.getElementById('fast');
+let randomInput = document.getElementById('random');
 let fastText = document.getElementById('fastText');
 let widthOfPX = document.getElementById('pxwidth');
 
@@ -16,13 +16,14 @@ let height;
 let startOverBool = false;
 let cantSort = false;
 
-let colorStates = {normal: 'black', sorted:'green', sorting:'blue'};
+let speed;
+
+let colorStates = {normal: 'black', sorted: 'green', sorting: 'blue', selected: 'red'};
 let lines;
 
 let select = document.getElementById('select');
 
-let algorithmstemplate = {name: '', fast: true};
-let currentAlgorithms = [{name: 'BUBBLE', fast: true}, {name: 'SELECTION', fast: false}, {name: 'MyOwn', fast: false}];
+let currentAlgorithms = [{name: 'BUBBLE', fast: true}, {name: 'SELECTION', fast: false}, {name: 'QUIKCSORT', fast: false}, {name: 'MyOwn', fast: false}];
 
 function main(){
     setUpCanvas();
@@ -41,6 +42,7 @@ function startOver(){
     startOverBool = true;
     checkIfFast();
     clearCanvas();
+    clearState();
     setUp();
 }
 
@@ -51,8 +53,6 @@ function setUpCanvas(){
     if(cWidthIn.value){
         canvas.width = cWidthIn.value;
     }
-
-    console.log(canvas.width)
 
     width = canvas.width;
     height = canvas.height;
@@ -71,11 +71,11 @@ function setUpSelect(){
 
 function checkIfFast(){
     if(!currentAlgorithms[select.value].fast){
-        fastSort.style.display = 'none';
+        fastSortInput.style.display = 'none';
         fastText.style.display = 'none';
     }
     else{
-        fastSort.style.display = 'inline-block';
+        fastSortInput.style.display = 'inline-block';
         fastText.style.display = 'inline';
     }
 }
@@ -102,27 +102,59 @@ function setUp(){
     checkPxWidth();
 
     let y;
-    for (let i = 0; i < width / widthOfPX.value; i++) {
+    
+    if (randomInput.checked) {
+
         ctx.beginPath();
 
-        y = randomRange(minHeight, height);
-
-        ctx.lineWidth = widthOfPX.value;
-
-        ctx.strokeStyle = colorStates.normal;
-
-        ctx.moveTo(i * widthOfPX.value, height);
-        ctx.lineTo(i * widthOfPX.value, height - y);
-        lines.x.push(i * widthOfPX.value);
-        lines.y.push(y);
-        lines.color.push(colorStates.normal);
+        for (let i = 0; i < width / widthOfPX.value; i++) {
+    
+            y = randomRange(minHeight, height);
+    
+            ctx.lineWidth = widthOfPX.value;
+    
+            ctx.strokeStyle = colorStates.normal;
+    
+            ctx.moveTo(i * widthOfPX.value, height);
+            ctx.lineTo(i * widthOfPX.value, height - y);
+            lines.x.push(i * widthOfPX.value);
+            lines.y.push(y);
+            lines.color.push(colorStates.normal);
+    
+        }
 
         ctx.stroke();
+        
+    } else {
+
+        ctx.beginPath();
+
+        for (let i = 0; i < width / widthOfPX.value; i++) {
+            
+            y = (height / (width / widthOfPX.value)) * i;
+    
+            ctx.lineWidth = widthOfPX.value;
+    
+            ctx.strokeStyle = colorStates.normal;
+    
+            ctx.moveTo(i * widthOfPX.value, height);
+            ctx.lineTo(i * widthOfPX.value, height - y);
+            lines.x.push(i * widthOfPX.value);
+            lines.y.push(y);
+            lines.color.push(colorStates.normal);
+    
+        }
+
+        lines = shuffle(lines);
+
+        reDraw();
+
+        ctx.stroke();
+
     }
 
     // ctx.stroke();
 
-    console.log(lines);
 }
 
 function update(){
@@ -137,10 +169,13 @@ function update(){
         else if(currentAlgorithms[select.value].name == 'MyOwn'){
             MyOwnSort();
         }
+        else if(currentAlgorithms[select.value].name == 'QUIKCSORT'){
+            quickSort();
+        }
     }
 }
 
-function reDraw(){
+function reDraw() {
     clearCanvas();
 
     for (let i = 0; i < lines.x.length; i++) {
@@ -157,9 +192,19 @@ function reDraw(){
     }
 }
 
-function clearCanvas(){
+function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
+
+function clearState() {
+    console.log(lines)
+    for (let i = 0; i < lines.color.length; i++) {
+        lines.color[i] = colorStates.normal;
+    }
+    console.log(lines)
+}
+
+//helper
 
 function randomRange(min, max){
     return Math.floor(Math.random() * max) + min;
@@ -169,17 +214,35 @@ const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
+function shuffle(array) {
+    let currentIndex = array.y.length,  randomIndex;
+
+    // While there remain elements to shuffle.
+    while (currentIndex != 0) {
+
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+
+        // And swap it with the current element.
+        [array.y[currentIndex], array.y[randomIndex]] = [
+        array.y[randomIndex], array.y[currentIndex]];
+    }
+
+    return array;
+}
+
+//helper
+
 window.onLoad = main();
 
-//MADE BY: GIGA JACHAVDZE
-
-//sorting algorithms
+//algorithms
 
 async function bubbleSort(){
 
     cantSort = true;
 
-    if(fastSort.checked){
+    if(fastSortInput.checked){
         for (let i = 0; i < lines.x.length - 1; i++) {
             for (let j = 0; j < lines.x.length - i - 1; j++) { 
                 if (lines.y[j] > lines.y[j + 1]) 
@@ -210,7 +273,6 @@ async function bubbleSort(){
                 break;
             }
         }
-        console.log(lines)
     }
     else{
         for (let i = 0; i < lines.x.length - 1; i++) {
@@ -243,7 +305,6 @@ async function bubbleSort(){
                 break;
             }
         }
-        console.log(lines)
     }
 }
 
@@ -280,7 +341,6 @@ async function selectionSort(){
         }
     }
 
-    console.log(lines);
 }
 
 async function MyOwnSort() {
@@ -321,4 +381,41 @@ async function MyOwnSort() {
     }
 }
 
-//sorting algorithms
+async function quickSort() {
+    cantSort = true;
+
+    for (let i = 0; i < lines.x.length - 1; i++) {
+        for (let j = 0; j < lines.x.length - i - 1; j++) { 
+            if (lines.y[j] > lines.y[j + 1]) 
+            {
+                let temp = lines.y[j];
+                lines.y[j] = lines.y[j + 1];
+                lines.y[j + 1] = temp;
+                lines.color[j + 1] = colorStates.sorting;
+                lines.color[j] = colorStates.normal;
+            }
+            else{
+                lines.color[j] = colorStates.normal;
+            }
+            if (startOverBool) {
+                break;
+            }
+            // await sleep(speed);
+            // reDraw();
+        }
+        lines.color[lines.x.length - 1 - i] = colorStates.sorted;
+
+        if(i == lines.x.length - 2){
+            lines.color[0] = colorStates.sorted;
+        }
+        await sleep(speed);
+        reDraw();
+        if (startOverBool) {
+            break;
+        }
+    }
+}
+
+//algorithms
+
+//MADE BY: GIGA JACHAVDZE

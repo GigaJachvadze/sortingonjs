@@ -5,21 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sorting</title>
 </head>
-<body style="margin: 0;">
-    <canvas id="canvas" width="600" height="400" style="margin: auto;"></canvas>
+<body>
+    <h1 style="text-align: center;">Sorting algorithms visualised</h1>
+    <div style="display: flex;">
+        <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
 
-    <input type="number" placeholder="width of line in px" id="pxwidth" onchange="startOver()">
-    <label for="">width of line in px</label>
-    <input type="number" placeholder="width in px" id="widthIn" min="1" onchange="setUpCanvas()">
-    <input type="number" placeholder="Update speed in ms" id="speed" min="1">
-    <button onclick="onSubmit()">SORT!</button>
-    <button onclick="startOver()">START OVER!</button>
-    <input type="checkbox" id="fast">
-    <label for="" id="fastText">FAST SORT!</label>
-    <select name="" id="select" onchange="startOver()"></select>
-    <label for="">SORTING ALGORITHMS!</label>
+    <div style="margin-top: 48px;">
+        <label for="">width of line in px</label>
+        <input type="number" placeholder="width of line in px" id="pxwidth" onchange="startOver()">
+    
+        <input type="number" placeholder="width in px" id="widthIn" min="1" onchange="setUpCanvas()">
+    
+        <input type="number" placeholder="Update speed in ms" id="speed" min="1">
+    
+        <button onclick="onSubmit()">SORT!</button>
+    
+        <button onclick="startOver()">START OVER!</button>
+    
+        <label for="" id="fastText">FAST SORT!</label>
+        <input onchange="startOver()" type="checkbox" id="fast">
+    
+        <label for="">RANDOM LINES HEIGHT!</label>
+        <input onchange="startOver()" type="checkbox" id="random">
+    
+        <label for="">SORTING ALGORITHMS!</label>
+        <select name="" id="select" onchange="startOver()"></select>
+    </div>
 
     <script src="main.js"></script>
+    <script type="" src="algorithms.js"></script>
 
     <!-- MADE BY: GIGA JACHAVDZE -->
 </body>
