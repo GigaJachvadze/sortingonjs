@@ -120,7 +120,6 @@ function setUp(){
             lines.x.push(i * widthOfPX.value);
             lines.y.push(y);
             lines.color.push(colorStates.normal);
-    
         }
 
         ctx.stroke();
@@ -170,7 +169,8 @@ function update(){
             MyOwnSort();
         }
         else if(currentAlgorithms[select.value].name == 'QUIKCSORT'){
-            quickSort();
+            console.log(lines);
+            quickSort(lines.y, 0, lines.x.length - 1);
         }
     }
 }
@@ -197,11 +197,17 @@ function clearCanvas() {
 }
 
 function clearState() {
-    console.log(lines)
     for (let i = 0; i < lines.color.length; i++) {
         lines.color[i] = colorStates.normal;
     }
-    console.log(lines)
+}
+
+function swap(a, b) {
+    let temp = lines.y[a];
+    lines.y[a] = lines.y[b];
+    lines.y[b] = temp;
+    lines.color[a] = colorStates.sorting;
+    lines.color[b] = colorStates.sorted;
 }
 
 //helper
@@ -381,38 +387,37 @@ async function MyOwnSort() {
     }
 }
 
-async function quickSort() {
+async function quickSort(arr, low, high) {
     cantSort = true;
+    if (startOverBool) {
+        return;
+    }
+    if (low < high) {
+        let pivotIndex = await partition(arr, low, high)
+        quickSort(arr, low, pivotIndex - 1);
+        quickSort(arr, pivotIndex, high);
+    }
 
-    for (let i = 0; i < lines.x.length - 1; i++) {
-        for (let j = 0; j < lines.x.length - i - 1; j++) { 
-            if (lines.y[j] > lines.y[j + 1]) 
-            {
-                let temp = lines.y[j];
-                lines.y[j] = lines.y[j + 1];
-                lines.y[j + 1] = temp;
-                lines.color[j + 1] = colorStates.sorting;
-                lines.color[j] = colorStates.normal;
-            }
-            else{
-                lines.color[j] = colorStates.normal;
+    async function partition(arr, low, high) {
+        let pivot = high; 
+
+        let i = low - 1;
+        for (let j = low; j < high; j++) {
+            if (arr[j] < arr[pivot]) {
+                i++;
+                lines.color[i]
+                swap(i, j);
+                await sleep(speed);
+                reDraw();
             }
             if (startOverBool) {
-                break;
+                return;
             }
-            // await sleep(speed);
-            // reDraw();
         }
-        lines.color[lines.x.length - 1 - i] = colorStates.sorted;
 
-        if(i == lines.x.length - 2){
-            lines.color[0] = colorStates.sorted;
-        }
+        swap(i + 1, pivot);
         await sleep(speed);
-        reDraw();
-        if (startOverBool) {
-            break;
-        }
+        return (i + 1)
     }
 }
 
